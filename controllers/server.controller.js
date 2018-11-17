@@ -1,15 +1,16 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
+import {validateForm} from '../test/validation';
 
 export const getMail = (req, res) => {
-  //The answer is in the message from google.
-  //Go to : https://www.google.com/settings/security/lesssecureapps
-  // set the Access for less secure apps setting to Enable
+  
+  const {errors, isValid} = validateForm(req.body);
 
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
+  if(!isValid){
+    return response.status(400).json(errors);
+  }
 
   nodemailer.createTestAccount((err, account) => {
-    // create reusable transporter object using the default SMTP transport
+    
     let transporter = nodemailer.createTransport({
       host: "smtp.ethereal.email",
       port: 587,
@@ -26,7 +27,7 @@ export const getMail = (req, res) => {
       text: `email:${req.body.email},
                  name: ${req.body.name},
                  phone: ${req.body.phone},
-                 message: ${req.body.massage}`,
+                 message: ${req.body.message}`,
       Subject: "Hello 🙋",
       html: `<b>привет <br/> email:${req.body.email}</b> <br/> 
                   <b>name: ${req.body.name}</b><br/> 
@@ -54,7 +55,4 @@ export const getMail = (req, res) => {
   });
 };
 
-export const test = (req, res) => {
-  res.send("hello, working");
-};
 
